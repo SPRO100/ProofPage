@@ -1,45 +1,129 @@
-import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { requireProfile } from '@/lib/auth/helpers'
-import { signOut } from '@/app/actions/auth'
+import { createClient } from '@/lib/supabase/server'
+import styles from './dashboard.module.css'
 
-// Temporary dashboard shell — Codex will build the full UI in PP-008.
-// This page confirms auth works end-to-end.
+function greeting() {
+  const h = new Date().getHours()
+  if (h < 12) return 'Good morning'
+  if (h < 17) return 'Good afternoon'
+  return 'Good evening'
+}
+
 export default async function DashboardPage() {
   const profile = await requireProfile()
+  const supabase = await createClient()
 
-  // If the user somehow skipped onboarding (no display_name set), send them there.
-  if (!profile.display_name) redirect('/onboarding')
+  const { data: projects } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('profile_id', profile.id)
+    .order('sort_order', { ascending: true })
+
+  const firstProject = projects?.[0] ?? null
+
+  const checks = [
+    !!profile.display_name,
+    (projects?.length ?? 0) > 0,
+    !!profile.bio_en,
+    !!profile.avatar_url,
+  ]
+  const score = Math.round((checks.filter(Boolean).length / checks.length) * 100)
 
   return (
-    <main className="min-h-screen bg-[#f3f1eb] px-5 py-7 text-[#141412]">
-      <header className="mx-auto flex w-full max-w-5xl items-center justify-between">
-        <span className="text-lg font-black tracking-[-0.05em]">
-          ProofPage<span className="text-[#dda91f]">.</span>
-        </span>
-        <form action={signOut}>
-          <button type="submit" className="text-sm font-bold text-[#706e67] hover:text-[#141412]">
-            Sign out
-          </button>
-        </form>
-      </header>
+    <main className={styles.content}>
+      <div className={styles.pageHead}>
+        <div>
+          <p className={styles.eyebrow}>Founder dashboard</p>
+          <h1>{greeting()}, {profile.display_name?.split(' ')[0] ?? profile.username}.</h1>
+          <p>Keep your profile current and your proof credible.</p>
+        </div>
+        <Link className={styles.primaryButton} href={`/${profile.username}`}>
+          View public page ↗
+        </Link>
+      </div>
 
-      <section className="mx-auto mt-16 w-full max-w-3xl">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8b6a0c]">Dashboard</p>
-        <h1 className="mt-3 text-4xl font-black tracking-[-0.05em]">
-          Welcome, {profile.display_name}
-        </h1>
-        <p className="mt-3 text-[#706e67]">
-          Your public page:{' '}
-          <a
-            href={`/${profile.username}`}
-            className="font-bold text-[#141412] underline"
-          >
-            proofpage.io/{profile.username}
-          </a>
-        </p>
-        <p className="mt-8 rounded-2xl border border-black/10 bg-[#fffefa] p-6 text-sm text-[#706e67]">
-          Full dashboard UI is coming in PP-008. Auth is wired up and working.
-        </p>
+      <section className={styles.panel}>
+        <div className={styles.panelHead}>
+          <div>
+            <p className={styles.eyebrow}>Profile health</p>
+            <h2>Finish the details that build trust.</h2>
+          </div>
+          <strong>{score}%</strong>
+        </div>
+        <div className={styles.progress}>
+          <span style={{ width: `${score}%` }} />
+        </div>
+        <div className={styles.checklist}>
+          <div className={profile.display_name ? styles.done : undefined}>
+            {profile.display_name ? '✓' : '1'}
+            <p>
+              <strong>Public profile published</strong>
+              <span>proofpage.io/{profile.username}</span>
+            </p>
+          </div>
+          <div className={(projects?.length ?? 0) > 0 ? styles.done : undefined}>
+            {(projects?.length ?? 0) > 0 ? '✓' : '2'}
+            <p>
+              <strong>First project added</strong>
+              <span>{firstProject ? firstProject.name + ' is visible' : 'No projects yet'}</span>
+            </p>
+            {!(projects?.length) && <Link href="/dashboard/projects">Add →</Link>}
+          </div>
+          <div className={profile.bio_en ? styles.done : undefined}>
+            {profile.bio_en ? '✓' : '3'}
+            <p>
+              <strong>Add your founder story</strong>
+              <span>Show the milestones behind the projects</span>
+            </p>
+            {!profile.bio_en && <Link href="/dashboard/profile">Edit →</Link>}
+          </div>
+          <div>
+            4
+            <p>
+              <strong>Connect a revenue source</strong>
+              <span>Replace manual figures with verified proof</span>
+            </p>
+            <Link href="/dashboard/revenue">Connect →</Link>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.twoColumns}>
+        {firstProject ? (
+          <article className={styles.panel}>
+            <div className={styles.panelHead}>
+              <div>
+                <p className={styles.eyebrow}>Your project</p>
+                <h2>{firstProject.name}</h2>
+              </div>
+              <span className={styles.status}>{firstProject.status}</span>
+            </div>
+            {firstProject.description_en && (
+              <p className={styles.bodyText}>{firstProject.description_en}</p>
+            )}
+            <Link className={styles.secondaryButton} href="/dashboard/projects">
+              Manage project
+            </Link>
+          </article>
+        ) : (
+          <article className={styles.panel}>
+            <p className={styles.eyebrow}>Your project</p>
+            <h2>No projects yet</h2>
+            <Link className={styles.secondaryButton} href="/dashboard/projects">
+              Add your first project →
+            </Link>
+          </article>
+        )}
+
+        {profile.plan === 'free' && (
+          <article className={`${styles.panel} ${styles.upgradePanel}`}>
+            <span className={styles.proBadge}>PRO</span>
+            <h2>Your next project is waiting.</h2>
+            <p>Add unlimited projects, verified revenue, more themes, and deeper analytics.</p>
+            <Link className={styles.goldButton} href="/dashboard/billing">Explore Pro</Link>
+          </article>
+        )}
       </section>
     </main>
   )
