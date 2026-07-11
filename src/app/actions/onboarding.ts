@@ -45,6 +45,17 @@ export async function completeOnboarding(
 
   if (!projectName) fieldErrors.project_name = 'Project name is required'
 
+  if (projectUrl) {
+    try {
+      const parsed = new URL(projectUrl)
+      if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+        fieldErrors.project_url = 'URL must start with http:// or https://'
+      }
+    } catch {
+      fieldErrors.project_url = 'Invalid URL format'
+    }
+  }
+
   if (Object.keys(fieldErrors).length) return { fieldErrors }
 
   // ── Username availability ─────────────────────────────────────────────────

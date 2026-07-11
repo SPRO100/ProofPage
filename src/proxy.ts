@@ -3,7 +3,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 // Routes that require an authenticated session
-const PROTECTED_ROUTES = ['/dashboard']
+const PROTECTED_ROUTES = ['/dashboard', '/onboarding']
 
 // Routes that authenticated users should not revisit
 const AUTH_ROUTES = ['/login', '/signup']

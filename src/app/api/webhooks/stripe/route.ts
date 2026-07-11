@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getBillingProvider } from '@/lib/billing/provider'
 import '@/lib/billing/providers/index'
+import type { WebhookEvent } from '@/lib/billing/provider'
 
 export async function POST(request: Request) {
   const body = await request.text()
@@ -13,15 +14,28 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  await applyBillingEvent(event.profileId, event)
+  await applyBillingEvent(event)
   return NextResponse.json({ received: true })
 }
 
-async function applyBillingEvent(
-  profileId: string | undefined,
-  event: Awaited<ReturnType<ReturnType<typeof getBillingProvider>['parseWebhook']>>,
-) {
-  if (!event || !profileId) return
+async function resolveProfileId(event: WebhookEvent): Promise<string | null> {
+  if (event.profileId) return event.profileId
+
+  // Fallback: look up by provider subscription ID
+  const admin = createAdminClient()
+  const { data } = await admin
+    .from('subscriptions')
+    .select('profile_id')
+    .eq('provider', 'stripe')
+    .eq('provider_subscription_id', event.providerSubscriptionId)
+    .maybeSingle()
+
+  return data?.profile_id ?? null
+}
+
+async function applyBillingEvent(event: WebhookEvent) {
+  const profileId = await resolveProfileId(event)
+  if (!profileId) return
 
   const admin = createAdminClient()
 
@@ -37,10 +51,7 @@ async function applyBillingEvent(
       cancel_at_period_end: event.cancelAtPeriodEnd ?? false,
     }, { onConflict: 'profile_id,provider' })
 
-    await admin
-      .from('profiles')
-      .update({ plan: 'pro' })
-      .eq('id', profileId)
+    await admin.from('profiles').update({ plan: 'pro' }).eq('id', profileId)
   }
 
   if (event.type === 'subscription.canceled' || event.type === 'subscription.expired') {
@@ -55,9 +66,14 @@ async function applyBillingEvent(
       cancel_at_period_end: false,
     }, { onConflict: 'profile_id,provider' })
 
+    await admin.from('profiles').update({ plan: 'free' }).eq('id', profileId)
+  }
+
+  if (event.type === 'payment.failed') {
     await admin
-      .from('profiles')
-      .update({ plan: 'free' })
-      .eq('id', profileId)
+      .from('subscriptions')
+      .update({ status: 'past_due' })
+      .eq('profile_id', profileId)
+      .eq('provider', 'stripe')
   }
 }

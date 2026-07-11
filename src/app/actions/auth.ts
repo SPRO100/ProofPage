@@ -40,7 +40,9 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
 export async function signIn(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const email = String(formData.get('email') ?? '').trim()
   const password = String(formData.get('password') ?? '')
-  const redirectTo = String(formData.get('redirectTo') ?? '/dashboard')
+  // Sanitise redirectTo — only allow internal paths to prevent open-redirect attacks
+  const rawRedirect = String(formData.get('redirectTo') ?? '')
+  const redirectTo = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') ? rawRedirect : '/dashboard'
 
   if (!email || !password) {
     return { error: 'Email and password are required' }
