@@ -3,7 +3,8 @@
 
 export type Plan = 'free' | 'pro'
 export type ProjectStatus = 'active' | 'paused' | 'building' | 'sold' | 'closed'
-export type RevenueProvider = 'stripe' | 'yukassa'
+export type RevenueProvider = 'stripe' | 'yukassa' | 'nowpayments'
+export type BillingProvider = 'stripe' | 'yukassa' | 'nowpayments'
 export type RevenueSourceStatus = 'active' | 'error' | 'disconnected'
 export type SubscriptionStatus = 'active' | 'past_due' | 'canceled' | 'trialing'
 export type ClickTarget = 'url' | 'revenue'
@@ -80,7 +81,7 @@ export interface RevenueMetric {
 export interface Subscription {
   id: string
   profile_id: string
-  provider: RevenueProvider
+  provider: BillingProvider
   provider_subscription_id: string
   status: SubscriptionStatus
   plan: string
