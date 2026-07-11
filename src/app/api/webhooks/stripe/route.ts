@@ -1,10 +1,18 @@
 import { NextResponse } from 'next/server'
+import { isBillingEnabled } from '@/lib/flags'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getBillingProvider } from '@/lib/billing/provider'
 import '@/lib/billing/providers/index'
 import type { WebhookEvent } from '@/lib/billing/provider'
 
+const BILLING_UNAVAILABLE = NextResponse.json(
+  { error: 'Billing is temporarily unavailable' },
+  { status: 503 },
+)
+
 export async function POST(request: Request) {
+  if (!isBillingEnabled()) return BILLING_UNAVAILABLE
+
   const body = await request.text()
   const signature = request.headers.get('stripe-signature') ?? ''
 
@@ -21,7 +29,6 @@ export async function POST(request: Request) {
 async function resolveProfileId(event: WebhookEvent): Promise<string | null> {
   if (event.profileId) return event.profileId
 
-  // Fallback: look up by provider subscription ID
   const admin = createAdminClient()
   const { data } = await admin
     .from('subscriptions')

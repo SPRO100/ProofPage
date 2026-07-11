@@ -1,23 +1,31 @@
 import { NextResponse } from 'next/server'
+import { isRevenueVerificationEnabled } from '@/lib/flags'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getProvider } from '@/lib/revenue/provider'
 import '@/lib/revenue/providers/index'
 import type { RevenueProvider } from '@/types/database'
 
 // POST /api/cron/sync-revenue
-// Called by Vercel Cron (see vercel.json). Protected by CRON_SECRET.
+// Protected by CRON_SECRET.
 // Syncs all active revenue sources that haven't been synced in 24h.
+//
+// To re-enable cron scheduling, restore vercel.json:
+//   { "crons": [{ "path": "/api/cron/sync-revenue", "schedule": "0 * * * *" }] }
+// and set REVENUE_VERIFICATION_ENABLED=true in Vercel env vars.
 export async function POST(request: Request) {
   const secret = request.headers.get('authorization')
   if (secret !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  if (!isRevenueVerificationEnabled()) {
+    return NextResponse.json({ error: 'Billing is temporarily unavailable' }, { status: 503 })
+  }
+
   const admin = createAdminClient()
 
   const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
 
-  // Fetch all active sources due for sync
   const { data: sources, error } = await admin
     .from('revenue_sources')
     .select('id, project_id, provider, vault_secret_id')

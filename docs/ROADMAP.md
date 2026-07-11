@@ -69,10 +69,18 @@
 ## Phase 8 — Launch
 **Owner: Both**
 
-- [ ] PP-026 — QA pass (all flows, both languages)
-- [ ] PP-027 — Security review and performance audit
-- [ ] PP-028 — Private alpha (10–20 founders)
-- [ ] PP-029 — Bug fixes and public beta
+- [x] PP-026 — QA pass (all flows, both languages)
+- [x] PP-027 — Security review and performance audit
+- [x] PP-028 — Disable billing and revenue verification pending security audit
+  - Billing (Stripe, ЮKassa, NOWPayments) disabled via `BILLING_ENABLED=false`
+  - Revenue verification disabled via `REVENUE_VERIFICATION_ENABLED=false`
+  - Pro plan not purchasable; existing Pro users in DB are unaffected
+  - Cron schedule removed from vercel.json; endpoint guarded by flag
+  - UI shows "Coming soon" placeholders on Revenue and Billing pages
+  - Re-enable after security audit by setting flags to `true` in Vercel
+- [ ] PP-029 — Private alpha (10–20 founders)
+- [ ] PP-030 — Billing security audit and provider re-enable
+- [ ] PP-031 — Bug fixes and public beta
 
 ## Work split summary
 Claude: Supabase, auth, RLS, server enforcement, billing webhooks, revenue integrations.

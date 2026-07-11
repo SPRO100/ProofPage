@@ -1,9 +1,17 @@
 import { NextResponse } from 'next/server'
+import { isBillingEnabled } from '@/lib/flags'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getBillingProvider } from '@/lib/billing/provider'
 import '@/lib/billing/providers/index'
 
+const BILLING_UNAVAILABLE = NextResponse.json(
+  { error: 'Billing is temporarily unavailable' },
+  { status: 503 },
+)
+
 export async function POST(request: Request) {
+  if (!isBillingEnabled()) return BILLING_UNAVAILABLE
+
   const body = await request.text()
   const signature = request.headers.get('x-nowpayments-sig') ?? ''
 
