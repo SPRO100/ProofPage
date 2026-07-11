@@ -8,6 +8,8 @@ export type BillingProvider = 'stripe' | 'yukassa' | 'nowpayments'
 export type RevenueSourceStatus = 'active' | 'error' | 'disconnected'
 export type SubscriptionStatus = 'active' | 'past_due' | 'canceled' | 'trialing'
 export type ClickTarget = 'url' | 'revenue'
+export type ProjectMetricType = 'users' | 'customers' | 'signups' | 'sales' | 'revenue' | 'mrr' | 'custom'
+export type MetricSourceStatus = 'manual' | 'demo'
 
 export interface ProfileLink {
   label: string
@@ -76,6 +78,20 @@ export interface RevenueMetric {
   currency: string
   is_verified: boolean
   recorded_at: string
+}
+
+export interface ProjectMetric {
+  id: string
+  project_id: string
+  metric_type: ProjectMetricType
+  label_en: string | null
+  label_ru: string | null
+  value: number
+  unit: string | null
+  currency: string | null
+  source_status: MetricSourceStatus
+  measured_at: string
+  created_at: string
 }
 
 export interface Subscription {
