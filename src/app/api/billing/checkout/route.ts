@@ -1,14 +1,22 @@
 import { NextResponse } from 'next/server'
+import { isBillingEnabled } from '@/lib/flags'
 import { getUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { getBillingProvider } from '@/lib/billing/provider'
 import '@/lib/billing/providers/index'
 import type { BillingProvider } from '@/types/database'
 
+const BILLING_UNAVAILABLE = NextResponse.json(
+  { error: 'Billing is temporarily unavailable' },
+  { status: 503 },
+)
+
 // POST /api/billing/checkout
 // Body: { provider: BillingProvider }
 // Returns: { checkoutUrl: string }
 export async function POST(request: Request) {
+  if (!isBillingEnabled()) return BILLING_UNAVAILABLE
+
   const user = await getUser()
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
