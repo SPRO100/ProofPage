@@ -15,7 +15,18 @@ export async function POST(request: Request) {
   }
 
   const admin = createAdminClient()
-  const profileId = event.profileId
+
+  // Resolve profileId: from event metadata or by subscription lookup
+  let profileId = event.profileId
+  if (!profileId) {
+    const { data } = await admin
+      .from('subscriptions')
+      .select('profile_id')
+      .eq('provider', 'yukassa')
+      .eq('provider_subscription_id', event.providerSubscriptionId)
+      .maybeSingle()
+    profileId = data?.profile_id ?? undefined
+  }
 
   if (!profileId) return NextResponse.json({ received: true })
 
