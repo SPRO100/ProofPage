@@ -1,5 +1,51 @@
-import styles from "../dashboard.module.css";
+import styles from '../dashboard.module.css'
 
 export default function BillingPage() {
-  return <main className={styles.content}><div className={styles.pageHead}><div><p className={styles.eyebrow}>Billing</p><h1>Choose how far your portfolio grows.</h1><p>Start free. Upgrade when you need more projects and proof.</p></div></div><div className={styles.billingGrid}><article className={styles.billingCard}><span>Current plan</span><h2>Free</h2><strong>$0</strong><p>One public profile and one project.</p><ul><li>✓ Base theme</li><li>✓ Manual revenue</li><li>✓ ProofPage branding</li></ul><button className={styles.secondaryButton}>Current plan</button></article><article className={`${styles.billingCard} ${styles.proBilling}`}><span>Recommended</span><h2>Pro</h2><strong>$9<small>/month</small></strong><p>A growing portfolio with verified proof.</p><ul><li>✓ Multiple projects</li><li>✓ Verified revenue</li><li>✓ More themes</li><li>✓ Advanced analytics</li></ul><button className={styles.goldButton}>Choose Pro</button></article></div></main>;
+  return (
+    <main className={styles.content}>
+      <div className={styles.pageHead}>
+        <div>
+          <p className={styles.eyebrow}>Billing</p>
+          <h1>Choose how far your portfolio grows.</h1>
+          <p>Start free. Upgrade when you need more projects and proof.</p>
+        </div>
+      </div>
+
+      <div className={styles.billingGrid}>
+        <article className={styles.billingCard}>
+          <span>Current plan</span>
+          <h2>Free</h2>
+          <strong>$0</strong>
+          <p>One public profile and one project.</p>
+          <ul>
+            <li>✓ Base theme</li>
+            <li>✓ Manual revenue</li>
+            <li>✓ ProofPage branding</li>
+          </ul>
+          <button className={styles.secondaryButton}>Current plan</button>
+        </article>
+
+        <article className={`${styles.billingCard} ${styles.proBilling}`}>
+          <span>Recommended</span>
+          <h2>Pro</h2>
+          <strong>$9<small>/month</small></strong>
+          <p>A growing portfolio with verified proof.</p>
+          <ul>
+            <li>✓ Multiple projects</li>
+            <li>✓ Verified revenue</li>
+            <li>✓ More themes</li>
+            <li>✓ Advanced analytics</li>
+          </ul>
+          <div style={{ marginTop: 'auto', width: '100%' }}>
+            <button className={styles.disabledButton} style={{ width: '100%' }} disabled aria-disabled="true">
+              Pro subscription — coming soon
+            </button>
+            <p style={{ marginTop: 12, fontSize: '0.72rem', color: '#85827a', textAlign: 'center' }}>
+              Payments are temporarily unavailable while we complete a security setup.
+            </p>
+          </div>
+        </article>
+      </div>
+    </main>
+  )
 }

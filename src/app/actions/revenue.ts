@@ -1,6 +1,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { isRevenueVerificationEnabled } from '@/lib/flags'
 import { requireAuth } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -13,11 +14,17 @@ export interface RevenueActionState {
   success?: string
 }
 
+const UNAVAILABLE: RevenueActionState = {
+  error: 'Revenue verification is temporarily unavailable',
+}
+
 // Connect a revenue source to a project
 export async function connectRevenueSource(
   _prev: RevenueActionState,
   formData: FormData,
 ): Promise<RevenueActionState> {
+  if (!isRevenueVerificationEnabled()) return UNAVAILABLE
+
   const user = await requireAuth()
   const projectId = formData.get('project_id') as string
   const providerName = formData.get('provider') as RevenueProvider
@@ -29,7 +36,6 @@ export async function connectRevenueSource(
 
   const supabase = await createClient()
 
-  // Verify this project belongs to the user
   const { data: project } = await supabase
     .from('projects')
     .select('id, profile_id')
@@ -39,7 +45,6 @@ export async function connectRevenueSource(
 
   if (!project) return { error: 'Project not found' }
 
-  // Check plan allows connecting providers
   const { data: profile } = await supabase
     .from('profiles')
     .select('plan')
@@ -50,7 +55,6 @@ export async function connectRevenueSource(
     return { error: 'Revenue provider connections require a Pro plan' }
   }
 
-  // Validate credentials with the provider
   let provider
   try {
     provider = getProvider(providerName)
@@ -63,7 +67,6 @@ export async function connectRevenueSource(
     return { error: connectResult.error ?? 'Connection failed' }
   }
 
-  // Store credential in Vault via admin client
   const admin = createAdminClient()
   const vaultName = `revenue_${providerName}_${projectId}`
 
@@ -73,14 +76,12 @@ export async function connectRevenueSource(
   })
 
   if (vaultError || !vaultEntry) {
-    // Vault RPC may not be available in all Supabase plans — fall back to direct storage warning
     console.error('Vault storage failed:', vaultError)
     return { error: 'Failed to securely store credentials. Check Supabase Vault is enabled.' }
   }
 
   const vaultSecretId = vaultEntry as string
 
-  // Upsert revenue_sources row
   const { error: sourceError } = await supabase
     .from('revenue_sources')
     .upsert({
@@ -101,6 +102,8 @@ export async function disconnectRevenueSource(
   _prev: RevenueActionState,
   formData: FormData,
 ): Promise<RevenueActionState> {
+  if (!isRevenueVerificationEnabled()) return UNAVAILABLE
+
   const user = await requireAuth()
   const sourceId = formData.get('source_id') as string
 
@@ -108,7 +111,6 @@ export async function disconnectRevenueSource(
 
   const supabase = await createClient()
 
-  // Fetch the source and verify ownership via the join
   const { data: source } = await supabase
     .from('revenue_sources')
     .select('id, vault_secret_id, provider, projects!inner(profile_id)')
@@ -120,19 +122,10 @@ export async function disconnectRevenueSource(
     return { error: 'Revenue source not found' }
   }
 
-  // Mark as disconnected
   await supabase
     .from('revenue_sources')
     .update({ status: 'disconnected', vault_secret_id: null })
     .eq('id', sourceId)
-
-  // Best-effort: call provider disconnect (ignore errors)
-  if (source.vault_secret_id) {
-    try {
-      const provider = getProvider(source.provider as RevenueProvider)
-      await provider.disconnect(source.vault_secret_id)
-    } catch {}
-  }
 
   redirect('/dashboard')
 }
@@ -142,6 +135,8 @@ export async function syncRevenueSource(
   _prev: RevenueActionState,
   formData: FormData,
 ): Promise<RevenueActionState> {
+  if (!isRevenueVerificationEnabled()) return UNAVAILABLE
+
   const user = await requireAuth()
   const sourceId = formData.get('source_id') as string
 
@@ -175,7 +170,6 @@ export async function syncRevenueSource(
     return { error: result.error ?? 'Sync failed' }
   }
 
-  // Insert new metric row
   await supabase.from('revenue_metrics').insert({
     project_id: source.project_id,
     source_id: sourceId,
@@ -188,7 +182,6 @@ export async function syncRevenueSource(
     is_verified: true,
   })
 
-  // Update source: clear error, set last_synced_at
   await supabase
     .from('revenue_sources')
     .update({ status: 'active', last_synced_at: new Date().toISOString(), error_message: null })

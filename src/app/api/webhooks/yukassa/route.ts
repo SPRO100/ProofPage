@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server'
+import { isBillingEnabled } from '@/lib/flags'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getBillingProvider } from '@/lib/billing/provider'
 import '@/lib/billing/providers/index'
 
+const BILLING_UNAVAILABLE = NextResponse.json(
+  { error: 'Billing is temporarily unavailable' },
+  { status: 503 },
+)
+
 export async function POST(request: Request) {
+  if (!isBillingEnabled()) return BILLING_UNAVAILABLE
+
   const body = await request.text()
-  // ЮKassa sends signature in X-Hmac-Signature header (if configured)
   const signature = request.headers.get('x-hmac-signature') ?? ''
 
   const provider = getBillingProvider('yukassa')
@@ -16,7 +23,6 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient()
 
-  // Resolve profileId: from event metadata or by subscription lookup
   let profileId = event.profileId
   if (!profileId) {
     const { data } = await admin
@@ -31,7 +37,6 @@ export async function POST(request: Request) {
   if (!profileId) return NextResponse.json({ received: true })
 
   if (event.type === 'subscription.activated') {
-    // One-time payment in ЮKassa grants 30 days of Pro
     const periodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
 
     await admin.from('subscriptions').upsert({

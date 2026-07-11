@@ -1,0 +1,5 @@
+import Link from "next/link";
+
+export default function ProfileNotFound() {
+  return <main className="grid min-h-screen place-items-center bg-[#ebe9e3] p-6 text-[#171714]"><section className="w-full max-w-xl rounded-[28px] border border-black/10 bg-[#fffefa] p-10 text-center shadow-[0_30px_90px_rgba(30,26,18,0.08)]"><p className="text-lg font-black tracking-[-0.05em]">ProofPage<span className="text-[#dda91f]">.</span></p><p className="mt-16 text-xs font-black uppercase tracking-[0.18em] text-[#8b6a0c]">404 · Profile unavailable</p><h1 className="mt-5 text-5xl font-black leading-[.95] tracking-[-0.065em]">There&apos;s no public proof here yet.</h1><p className="mx-auto mt-6 max-w-md leading-7 text-[#77746c]">The address may be incorrect, or the founder may still be preparing their page.</p><div className="mt-10 flex flex-wrap justify-center gap-3"><Link className="rounded-full bg-[#171714] px-6 py-3 font-bold text-white" href="/">Back to ProofPage</Link><Link className="rounded-full border border-black/15 px-6 py-3 font-bold" href="/signup">Claim your address</Link></div></section></main>;
+}

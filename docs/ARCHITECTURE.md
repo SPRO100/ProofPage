@@ -12,7 +12,26 @@
 | Storage | Supabase Storage (avatars) | — |
 | Hosting | Vercel (preview per PR, production on `main`) | — |
 | CI | GitHub Actions | — |
-| Payments | Stripe or ЮKassa (one provider for MVP) | — |
+| Payments | Stripe, ЮKassa, NOWPayments — **disabled pending security audit** | — |
+
+## Feature flags
+
+Two server-side environment variables control monetisation features.
+Both default to `false` — only the exact string `"true"` enables them.
+Never use `NEXT_PUBLIC_*` variants: these flags protect server endpoints.
+
+| Flag | Default | Controls |
+|------|---------|----------|
+| `BILLING_ENABLED` | `false` | `/api/billing/checkout`, all webhook handlers |
+| `REVENUE_VERIFICATION_ENABLED` | `false` | revenue server actions, `/api/cron/sync-revenue` |
+
+Helper functions live in `src/lib/flags.ts`.
+
+To re-enable billing after the security audit:
+1. Set `BILLING_ENABLED=true` in Vercel environment variables.
+2. Add billing provider keys (Stripe / ЮKassa / NOWPayments) to Vercel.
+3. Restore cron in `vercel.json`: `{ "crons": [{ "path": "/api/cron/sync-revenue", "schedule": "0 * * * *" }] }` and set `REVENUE_VERIFICATION_ENABLED=true`.
+4. Redeploy.
 
 ## Directory structure
 
