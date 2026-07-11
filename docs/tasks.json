@@ -1,0 +1,304 @@
+{
+  "version": "1.0",
+  "description": "ProofPage task registry. Each task maps to one GitHub Issue and one branch.",
+  "phases": [
+    {
+      "id": 0,
+      "name": "Foundation",
+      "tasks": [
+        {
+          "id": "PP-001",
+          "title": "Repository and Next.js scaffold",
+          "owner": "codex",
+          "status": "done",
+          "branch": "codex/PP-001-foundation",
+          "issue": null
+        },
+        {
+          "id": "PP-002",
+          "title": "GitHub infrastructure: issue templates, PR template, CI, branch protection",
+          "owner": "claude",
+          "status": "done",
+          "branch": "claude/new-project-setup-opa0uz",
+          "issue": null
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Documentation and architecture",
+      "tasks": [
+        {
+          "id": "PP-003",
+          "title": "PRODUCT.md, PRD.md, ARCHITECTURE.md, DATABASE.md, DESIGN.md",
+          "owner": "claude",
+          "status": "done",
+          "branch": "claude/new-project-setup-opa0uz",
+          "issue": null
+        },
+        {
+          "id": "PP-004",
+          "title": "ROADMAP.md, AGENTS.md, tasks.json, README.md",
+          "owner": "claude",
+          "status": "in_progress",
+          "branch": "claude/new-project-setup-opa0uz",
+          "issue": null
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Technical foundation",
+      "tasks": [
+        {
+          "id": "PP-005",
+          "title": "Supabase project setup and database migrations (initial schema)",
+          "owner": "claude",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-006",
+          "title": "Supabase Auth integration and middleware",
+          "owner": "claude",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-007",
+          "title": "Environment variables, .env.example, Vercel project setup",
+          "owner": "codex",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-008",
+          "title": "RU/EN i18n dictionary and locale routing",
+          "owner": "codex",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-009",
+          "title": "Route scaffold and shadcn/ui setup",
+          "owner": "codex",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Language selection",
+      "tasks": [
+        {
+          "id": "PP-010",
+          "title": "Language selection screen (logo + EN | RU, cookie, nav toggle)",
+          "owner": "codex",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Auth and onboarding",
+      "tasks": [
+        {
+          "id": "PP-011",
+          "title": "Email/password registration and OAuth (GitHub, Google)",
+          "owner": "claude",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-012",
+          "title": "Username uniqueness check API",
+          "owner": "claude",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-013",
+          "title": "Onboarding wizard UI (8 steps)",
+          "owner": "codex",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Public profile",
+      "tasks": [
+        {
+          "id": "PP-014",
+          "title": "Public profile API (profile + projects + revenue data)",
+          "owner": "claude",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-015",
+          "title": "Public profile UI /[username] — desktop and mobile",
+          "owner": "codex",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-016",
+          "title": "Verification badge component (all states)",
+          "owner": "codex",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Plan limits",
+      "tasks": [
+        {
+          "id": "PP-017",
+          "title": "Server-side entitlement middleware",
+          "owner": "claude",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-018",
+          "title": "Pricing page and paywall components",
+          "owner": "codex",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Revenue verification",
+      "tasks": [
+        {
+          "id": "PP-019",
+          "title": "Revenue provider abstraction layer",
+          "owner": "claude",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-020",
+          "title": "Stripe read-only integration and sync cron",
+          "owner": "claude",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-021",
+          "title": "Revenue connection UI and sync status",
+          "owner": "codex",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-022",
+          "title": "ЮKassa integration",
+          "owner": "claude",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Catalog and leaderboard",
+      "tasks": [
+        {
+          "id": "PP-023",
+          "title": "Leaderboard queries, ranking, and daily snapshot job",
+          "owner": "claude",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-024",
+          "title": "Discover and leaderboard UI",
+          "owner": "codex",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Billing",
+      "tasks": [
+        {
+          "id": "PP-025",
+          "title": "Stripe subscription checkout and webhook handler",
+          "owner": "claude",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-026",
+          "title": "ЮKassa billing",
+          "owner": "claude",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-027",
+          "title": "Billing dashboard UI",
+          "owner": "codex",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Launch",
+      "tasks": [
+        {
+          "id": "PP-028",
+          "title": "QA pass, security review, performance audit",
+          "owner": "both",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        },
+        {
+          "id": "PP-029",
+          "title": "Private alpha rollout",
+          "owner": "both",
+          "status": "backlog",
+          "branch": null,
+          "issue": null
+        }
+      ]
+    }
+  ]
+}

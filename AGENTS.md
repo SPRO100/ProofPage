@@ -1,10 +1,54 @@
-# ProofPage collaboration rules
+# ProofPage — Collaboration Rules
+
+Read this file before starting any task.
+
+## General rules
 
 - ProofPage is standalone. Do not add ProofMRR dependencies to the MVP.
-- Read docs/PRODUCT.md and docs/ROADMAP.md before changes.
-- Use branches claude/PP-###-* or codex/PP-###-*.
-- Every user-facing string requires English and Russian variants.
-- Free accounts have one project and the base theme; enforce paid features server-side.
-- Manual revenue is always unverified. Revenue integrations are read-only.
-- Never commit secrets.
-- Before a PR run lint, typecheck, and build.
+- Read `docs/PRODUCT.md`, `docs/ARCHITECTURE.md`, and `docs/ROADMAP.md` before making changes.
+- Every user-facing string requires both English and Russian variants — no exceptions.
+- Free plan limits (one project, base theme) are enforced server-side. Never rely on client-side checks alone.
+- Manual revenue is always unverified regardless of plan.
+- Revenue provider integrations are read-only. Never write to a provider.
+- Never commit secrets, tokens, or credentials of any kind.
+- Before opening a PR: run `npm run lint && npm run typecheck && npm run build`.
+
+## Branch naming
+
+| Agent | Pattern | Example |
+|-------|---------|---------|
+| Claude | `claude/PP-###-short-description` | `claude/PP-012-supabase-schema` |
+| Codex | `codex/PP-###-short-description` | `codex/PP-013-language-screen` |
+
+## Workflow
+
+1. Pick a GitHub Issue and move it to **In Progress** on the project board.
+2. Create a branch from `dev`.
+3. Do only the work described in the issue — no scope creep.
+4. Open a PR into `dev` with the issue linked (`Closes #NNN`).
+5. The other agent reviews the PR.
+6. CI must pass before merge.
+7. Merge into `dev`; verify on Vercel Preview.
+
+## Work split
+
+| Area | Claude | Codex |
+|------|--------|-------|
+| Architecture | Owner | Review |
+| Supabase schema and SQL | Owner | Tests |
+| Auth and session | Owner | UI + flows |
+| Revenue provider integrations | Owner | UI + QA |
+| Billing and webhooks | Owner | UI + QA |
+| Design system | Review | Owner |
+| Public profile UI | API | Owner |
+| RU/EN i18n | Server support | Owner |
+| Catalog and leaderboard | Queries | UI |
+| Automated tests | Shared | Shared |
+| Code review | Cross | Cross |
+| Documentation | Architecture | Product + updates |
+
+## File ownership (do not edit without coordination)
+
+- Claude owns: `supabase/`, `src/lib/supabase/`, `src/lib/auth/`, `src/lib/revenue/`, `src/lib/billing/`, `src/app/api/`
+- Codex owns: `src/components/`, `src/app/(auth)/`, `src/app/(public)/`, `src/lib/i18n/`
+- Shared: `src/app/(dashboard)/`, `src/types/`, `docs/`
