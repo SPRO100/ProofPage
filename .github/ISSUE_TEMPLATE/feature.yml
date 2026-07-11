@@ -1,0 +1,50 @@
+name: Feature
+description: New feature or enhancement
+title: "PP-XXX — "
+labels: ["feature"]
+body:
+  - type: dropdown
+    id: assignee_role
+    attributes:
+      label: Assignee
+      options:
+        - Claude
+        - Codex
+        - Both
+    validations:
+      required: true
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      options:
+        - "Foundation"
+        - "Documentation"
+        - "Tech foundation"
+        - "Auth and onboarding"
+        - "Public profile"
+        - "Plan limits"
+        - "Revenue verification"
+        - "Billing"
+        - "Launch"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What needs to be done and why
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Definition of done — what must be true for this to be closed
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Technical notes
+      description: Edge cases, dependencies on other tasks, API contracts

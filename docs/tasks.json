@@ -1,0 +1,278 @@
+{
+  "version": "2.0",
+  "description": "ProofPage task registry. Each task maps to one GitHub Issue and one branch. Updated for PP-003.",
+  "tasks": [
+    {
+      "id": "PP-001",
+      "title": "Repository scaffold: Next.js 16, TypeScript, Tailwind, CI",
+      "owner": "codex",
+      "status": "done",
+      "branch": "codex/PP-001-foundation",
+      "pr": 1,
+      "phase": "foundation"
+    },
+    {
+      "id": "PP-002",
+      "title": "Bilingual landing page and pricing (EN + RU)",
+      "owner": "codex",
+      "status": "review",
+      "branch": "codex/PP-002-landing-pricing",
+      "pr": 2,
+      "phase": "foundation"
+    },
+    {
+      "id": "PP-003",
+      "title": "Project documentation and architecture (ARCHITECTURE, DATABASE, DESIGN, PRD, tasks.json, templates)",
+      "owner": "claude",
+      "status": "in_progress",
+      "branch": "claude/PP-003-project-documentation",
+      "pr": null,
+      "phase": "documentation"
+    },
+    {
+      "id": "PP-004",
+      "title": "Supabase project setup and initial database migrations",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "tech-foundation",
+      "notes": "Includes all tables from DATABASE.md, RLS policies, indexes, seed data"
+    },
+    {
+      "id": "PP-005",
+      "title": "Supabase Auth integration and middleware",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "tech-foundation",
+      "notes": "Email/password + OAuth. middleware.ts auth guard for /dashboard/*"
+    },
+    {
+      "id": "PP-006",
+      "title": "Environment variables, .env.example, Vercel deploy configuration",
+      "owner": "codex",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "tech-foundation"
+    },
+    {
+      "id": "PP-007",
+      "title": "RU/EN i18n dictionary and locale routing",
+      "owner": "codex",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "tech-foundation"
+    },
+    {
+      "id": "PP-008",
+      "title": "Route scaffold and shadcn/ui installation",
+      "owner": "codex",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "tech-foundation",
+      "notes": "All routes from PRD.md. shadcn/ui with base theme tokens."
+    },
+    {
+      "id": "PP-009",
+      "title": "Registration: email/password and OAuth (GitHub, Google)",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "auth-onboarding"
+    },
+    {
+      "id": "PP-010",
+      "title": "Username uniqueness check API",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "auth-onboarding",
+      "notes": "GET /api/username/check?username=foo → {available: bool}"
+    },
+    {
+      "id": "PP-011",
+      "title": "Onboarding wizard UI (8 steps)",
+      "owner": "codex",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "auth-onboarding"
+    },
+    {
+      "id": "PP-012",
+      "title": "Profile creation on onboarding completion",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "auth-onboarding",
+      "notes": "POST /api/onboarding/complete — creates profile + first project"
+    },
+    {
+      "id": "PP-013",
+      "title": "Public profile API",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "public-profile",
+      "notes": "GET /api/profile/[username] — profile + projects + latest revenue metrics"
+    },
+    {
+      "id": "PP-014",
+      "title": "Public profile page /[username] — desktop and mobile",
+      "owner": "codex",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "public-profile"
+    },
+    {
+      "id": "PP-015",
+      "title": "Verification badge component (4 states: verified, stale, error, unverified)",
+      "owner": "codex",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "public-profile"
+    },
+    {
+      "id": "PP-016",
+      "title": "Profile view tracking (analytics)",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "public-profile",
+      "notes": "POST /api/analytics/view — inserts into profile_views"
+    },
+    {
+      "id": "PP-017",
+      "title": "Server-side entitlement middleware",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "plan-limits",
+      "notes": "Project count limit, theme access, revenue connection access"
+    },
+    {
+      "id": "PP-018",
+      "title": "Pricing page, upgrade prompt, paywall components",
+      "owner": "codex",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "plan-limits"
+    },
+    {
+      "id": "PP-019",
+      "title": "RevenueProvider interface and sync infrastructure",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "revenue",
+      "notes": "Common interface + Vercel Cron /api/cron/sync-revenue + vault credential storage"
+    },
+    {
+      "id": "PP-020",
+      "title": "First revenue provider integration",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "revenue",
+      "notes": "Provider choice (Stripe or ЮKassa) to be confirmed before starting PP-019"
+    },
+    {
+      "id": "PP-021",
+      "title": "Revenue connection UI, sync status, charts",
+      "owner": "codex",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "revenue"
+    },
+    {
+      "id": "PP-022",
+      "title": "Second revenue provider integration",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "revenue",
+      "notes": "Only after PP-020 is validated in production"
+    },
+    {
+      "id": "PP-023",
+      "title": "Subscription checkout (billing provider matching revenue provider choice)",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "billing"
+    },
+    {
+      "id": "PP-024",
+      "title": "Billing webhook handler (activate, renew, cancel, expire)",
+      "owner": "claude",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "billing"
+    },
+    {
+      "id": "PP-025",
+      "title": "Billing dashboard UI and subscription state",
+      "owner": "codex",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "billing"
+    },
+    {
+      "id": "PP-026",
+      "title": "QA pass — all flows, both languages",
+      "owner": "both",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "launch"
+    },
+    {
+      "id": "PP-027",
+      "title": "Security review and performance audit",
+      "owner": "both",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "launch"
+    },
+    {
+      "id": "PP-028",
+      "title": "Private alpha rollout",
+      "owner": "both",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "launch"
+    },
+    {
+      "id": "PP-029",
+      "title": "Bug fixes and public beta",
+      "owner": "both",
+      "status": "backlog",
+      "branch": null,
+      "pr": null,
+      "phase": "launch"
+    }
+  ]
+}
