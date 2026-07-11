@@ -8,8 +8,8 @@
 - [ ] dev branch, protection, and Vercel previews
 
 ## Phase 1 — Product shell
-- [ ] Shared bilingual dictionary and locale routing
-- [ ] Landing and pricing
+- [x] Shared bilingual landing dictionary
+- [x] Landing and pricing
 - [ ] Authentication and onboarding
 - [ ] Dashboard
 
