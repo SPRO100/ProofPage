@@ -28,4 +28,12 @@ describe('manual project metrics', () => {
     expect(metricStatusLabel('demo', 'en')).toContain('Demo')
     expect(metricStatusLabel('demo', 'ru')).toContain('Демо')
   })
+  it('rejects dates more than 2 days in the future', () => {
+    const farFuture = new Date(Date.now() + 3 * 86_400_000).toISOString()
+    expect(validateManualMetric({ ...valid, measuredAt: farFuture })).toBe('Measurement date cannot be in the future')
+  })
+  it('accepts dates up to 2 days in the future', () => {
+    const nearFuture = new Date(Date.now() + 86_400_000).toISOString()
+    expect(validateManualMetric({ ...valid, measuredAt: nearFuture })).toBeNull()
+  })
 })

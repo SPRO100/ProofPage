@@ -57,7 +57,7 @@ function Trend({ variant = 0 }: { variant?: number }) {
 export default function Home() {
   const [locale, setLocale] = useState<Locale | null>(null);
   useEffect(() => { const saved = localStorage.getItem("proofpage-locale"); if (saved === "en" || saved === "ru") queueMicrotask(() => setLocale(saved)); }, []);
-  const choose = (next: Locale) => { localStorage.setItem("proofpage-locale", next); document.documentElement.lang = next; setLocale(next); };
+  const choose = (next: Locale) => { localStorage.setItem("proofpage-locale", next); document.cookie = `proofpage-locale=${next}; path=/; max-age=31536000; samesite=lax`; document.documentElement.lang = next; setLocale(next); };
   if (!locale) return <main className="language-screen"><section className="language-card"><div className="brand">Proof<span>Page</span></div><p>Choose your language · Выберите язык</p><div className="language-options"><button onClick={() => choose("en")}>English</button><button onClick={() => choose("ru")}>Русский</button></div></section></main>;
   const t = copy[locale];
   return <main className="dark-site">
