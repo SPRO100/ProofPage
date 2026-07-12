@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { isUsernameAvailable } from '@/lib/auth/helpers'
 
 export type OnboardingState = {
@@ -11,6 +12,7 @@ export type OnboardingState = {
 }
 
 const USERNAME_RE = /^[a-z0-9][a-z0-9-]*[a-z0-9]$/
+const PROJECT_STATUSES = new Set(['active', 'paused', 'building', 'sold', 'closed'])
 
 // Called on final "Publish ProofPage" submit.
 // Receives all 4 steps worth of data in one FormData.
@@ -44,6 +46,7 @@ export async function completeOnboarding(
   const projectDesc = String(formData.get('project_description') ?? '').trim()
 
   if (!projectName) fieldErrors.project_name = 'Project name is required'
+  if (!PROJECT_STATUSES.has(projectStatus)) fieldErrors.project_status = 'Invalid project status'
 
   if (projectUrl) {
     try {
@@ -65,21 +68,51 @@ export async function completeOnboarding(
   }
 
   // ── Persist profile ───────────────────────────────────────────────────────
-  const { error: profileError } = await supabase
+  const profileValues = {
+    username,
+    display_name: displayName || null,
+    location: location || null,
+    bio_en: bio || null,
+  }
+
+  const { data: savedProfile, error: profileError } = await supabase
     .from('profiles')
-    .update({
-      username,
-      display_name: displayName || null,
-      location: location || null,
-      bio_en: bio || null,
-    })
+    .update(profileValues)
     .eq('id', user.id)
+    .select('id')
+    .maybeSingle()
 
   if (profileError) {
     if (profileError.code === '23505') {
       return { fieldErrors: { username: 'This address is already taken. Please choose another.' } }
     }
     return { error: 'Failed to save profile. Please try again.' }
+  }
+
+  // The database trigger normally creates this row during signup. Recover
+  // safely if an account was created while the trigger was missing/disabled.
+  if (!savedProfile) {
+    try {
+      const admin = createAdminClient()
+      const { error: recoveryError } = await admin.from('profiles').insert({
+        id: user.id,
+        ...profileValues,
+      })
+
+      if (recoveryError) {
+        if (recoveryError.code === '23505') {
+          return { fieldErrors: { username: 'This address is already taken. Please choose another.' } }
+        }
+        console.error('Onboarding profile recovery failed', {
+          code: recoveryError.code,
+          message: recoveryError.message,
+        })
+        return { error: 'Failed to create your profile. Please try again.' }
+      }
+    } catch (error) {
+      console.error('Onboarding profile recovery is unavailable', error)
+      return { error: 'Failed to create your profile. Please try again.' }
+    }
   }
 
   // ── Persist first project ─────────────────────────────────────────────────
@@ -100,6 +133,10 @@ export async function completeOnboarding(
     if (projectError.code === 'P0001') {
       return { error: 'Free plan allows only one project.' }
     }
+    console.error('Onboarding project insert failed', {
+      code: projectError.code,
+      message: projectError.message,
+    })
     return { error: 'Failed to save project. Please try again.' }
   }
 
