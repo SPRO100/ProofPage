@@ -149,7 +149,7 @@ export async function completeOnboarding(
       code: projectError.code,
       message: projectError.message,
     })
-    return { error: `Failed to save project (code: ${projectError.code ?? 'unknown'}). Please try again.` }
+    return { error: 'Failed to save project. Please try again.' }
   }
 
   redirect('/dashboard')
