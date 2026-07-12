@@ -38,3 +38,16 @@ export function validateLogoBytes(type: string, bytes: Uint8Array) {
 export function isProjectDeletionConfirmed(projectId: string, confirmation: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(projectId) && confirmation === 'DELETE'
 }
+
+// Extracts the storage path from a Supabase public URL so we can delete it.
+// Public URL format: https://<ref>.supabase.co/storage/v1/object/public/project-logos/<path>
+export function logoStoragePath(publicUrl: string): string | null {
+  try {
+    const url = new URL(publicUrl)
+    const marker = '/object/public/project-logos/'
+    const idx = url.pathname.indexOf(marker)
+    return idx === -1 ? null : decodeURIComponent(url.pathname.slice(idx + marker.length))
+  } catch {
+    return null
+  }
+}

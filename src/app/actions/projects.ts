@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireAuth } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
-import { isProjectDeletionConfirmed, validateLogo, validateLogoBytes, validateProjectUpdate, type ProjectUpdateInput } from '@/lib/projects/validation'
+import { isProjectDeletionConfirmed, logoStoragePath, validateLogo, validateLogoBytes, validateProjectUpdate, type ProjectUpdateInput } from '@/lib/projects/validation'
 import type { ProjectMetricType, ProjectStatus } from '@/types/database'
 
 export type ProjectActionState = { error?: string; success?: string; fieldErrors?: Record<string,string> }
@@ -30,22 +30,34 @@ export async function updateProject(_previous: ProjectActionState, formData: For
   if (!project) return { error:'Project not found' }
 
   let logoUrl = project.logo_url as string | null
+  let newLogoPath: string | null = null
   const logo = formData.get('logo')
   if (logo instanceof File && logo.size > 0) {
     const logoError = validateLogo(logo)
     if (logoError) return { fieldErrors:{ logo:logoError } }
     const extension = ({'image/png':'png','image/jpeg':'jpg','image/webp':'webp'} as Record<string,string>)[logo.type]
-    const path = `${user.id}/${projectId}-${crypto.randomUUID()}.${extension}`
+    newLogoPath = `${user.id}/${projectId}-${crypto.randomUUID()}.${extension}`
     const bytes = await logo.arrayBuffer()
     const contentError = validateLogoBytes(logo.type, new Uint8Array(bytes))
     if (contentError) return { fieldErrors:{ logo:contentError } }
-    const { error: uploadError } = await supabase.storage.from('project-logos').upload(path, bytes, { contentType:logo.type, upsert:false })
+    const { error: uploadError } = await supabase.storage.from('project-logos').upload(newLogoPath, bytes, { contentType:logo.type, upsert:false })
     if (uploadError) return { error:'Failed to upload project logo' }
-    logoUrl = supabase.storage.from('project-logos').getPublicUrl(path).data.publicUrl
+    logoUrl = supabase.storage.from('project-logos').getPublicUrl(newLogoPath).data.publicUrl
   }
 
   const { error } = await supabase.from('projects').update({ name:input.name, description_en:input.descriptionEn || null, description_ru:input.descriptionRu || null, url:input.url || null, status:input.status, is_public:input.isPublic, primary_metric_type:input.primaryMetricType, logo_url:logoUrl }).eq('id',projectId).eq('profile_id',user.id)
-  if (error) return { error:'Failed to update project' }
+  if (error) {
+    // DB update failed — remove the newly uploaded file to avoid orphans
+    if (newLogoPath) await supabase.storage.from('project-logos').remove([newLogoPath])
+    return { error:'Failed to update project' }
+  }
+
+  // DB update succeeded — delete the old logo if we replaced it
+  if (newLogoPath && project.logo_url) {
+    const oldPath = logoStoragePath(project.logo_url as string)
+    if (oldPath) await supabase.storage.from('project-logos').remove([oldPath])
+  }
+
   revalidatePath('/dashboard/projects'); revalidatePath('/[username]', 'page')
   return { success:'Project updated' }
 }
@@ -56,10 +68,15 @@ export async function deleteProject(formData: FormData): Promise<void> {
   const confirmation = String(formData.get('confirmation') ?? '')
   if (!isProjectDeletionConfirmed(projectId, confirmation)) return
   const supabase = await createClient()
-  const { data: project } = await supabase.from('projects').select('id').eq('id',projectId).eq('profile_id',user.id).maybeSingle()
+  const { data: project } = await supabase.from('projects').select('id, logo_url').eq('id',projectId).eq('profile_id',user.id).maybeSingle()
   if (!project) return
   const { error } = await supabase.from('projects').delete().eq('id',projectId).eq('profile_id',user.id)
   if (error) return
+  // Clean up logo from Storage after DB row is gone
+  if (project.logo_url) {
+    const path = logoStoragePath(project.logo_url as string)
+    if (path) await supabase.storage.from('project-logos').remove([path])
+  }
   revalidatePath('/dashboard/projects')
   redirect('/dashboard/projects')
 }
