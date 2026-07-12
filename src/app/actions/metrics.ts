@@ -41,3 +41,22 @@ export async function addManualMetric(_previous: MetricActionState, formData: Fo
   revalidatePath('/dashboard/projects')
   return { success: 'Metric saved as unverified' }
 }
+
+export async function deleteManualMetric(formData: FormData): Promise<void> {
+  const user = await requireAuth()
+  const metricId = String(formData.get('metric_id') ?? '')
+  if (!/^[0-9a-f-]{36}$/i.test(metricId)) return
+
+  const supabase = await createClient()
+  const { data: metric } = await supabase
+    .from('project_metrics')
+    .select('id, projects!inner(profile_id)')
+    .eq('id', metricId)
+    .eq('source_status', 'manual')
+    .maybeSingle()
+  const ownerId = (metric?.projects as unknown as { profile_id: string } | null)?.profile_id
+  if (!metric || ownerId !== user.id) return
+
+  await supabase.from('project_metrics').delete().eq('id', metricId).eq('source_status', 'manual')
+  revalidatePath('/dashboard/projects')
+}
