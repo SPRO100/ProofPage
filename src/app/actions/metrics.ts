@@ -57,6 +57,6 @@ export async function deleteManualMetric(formData: FormData): Promise<void> {
   const ownerId = (metric?.projects as unknown as { profile_id: string } | null)?.profile_id
   if (!metric || ownerId !== user.id) return
 
-  await supabase.from('project_metrics').delete().eq('id', metricId).eq('source_status', 'manual')
-  revalidatePath('/dashboard/projects')
+  const { error: deleteError } = await supabase.from('project_metrics').delete().eq('id', metricId).eq('source_status', 'manual')
+  if (!deleteError) revalidatePath('/dashboard/projects')
 }

@@ -99,7 +99,9 @@ function formatMoney(value: number, currency: string) {
 }
 
 function formatDate(value: string, locale: "en" | "ru") {
-  return new Intl.DateTimeFormat(locale, { month: "short", day: "numeric" }).format(new Date(value));
+  const d = new Date(value)
+  if (isNaN(d.getTime())) return "—"
+  return new Intl.DateTimeFormat(locale, { month: "short", day: "numeric" }).format(d);
 }
 
 function metricLabel(metric: ProjectMetric, locale: "en" | "ru") {
