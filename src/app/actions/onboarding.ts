@@ -116,20 +116,32 @@ export async function completeOnboarding(
   }
 
   // ── Persist first project ─────────────────────────────────────────────────
-  const { error: projectError } = await supabase
-    .from('projects')
-    .insert({
-      profile_id: user.id,
-      name: projectName,
-      description_en: projectDesc || null,
-      url: projectUrl || null,
-      status: projectStatus,
-      sort_order: 0,
-      is_public: true,
-    })
+  // The authenticated server action has already verified the user JWT and all
+  // submitted fields. Use the server-only admin client for this one bootstrap
+  // insert so onboarding does not depend on a separately deployed RLS policy.
+  // The database free-plan trigger remains the final one-project guard.
+  let projectError: { code?: string; message: string } | null = null
+  try {
+    const admin = createAdminClient()
+    const result = await admin
+      .from('projects')
+      .insert({
+        profile_id: user.id,
+        name: projectName,
+        description_en: projectDesc || null,
+        url: projectUrl || null,
+        status: projectStatus,
+        sort_order: 0,
+        is_public: true,
+      })
+    projectError = result.error
+  } catch (error) {
+    console.error('Onboarding project creation is unavailable', error)
+    return { error: 'Project creation is temporarily unavailable. Please try again.' }
+  }
 
   if (projectError) {
-    // P0001 = free plan trigger fired (shouldn't happen in onboarding, but guard anyway)
+    // P0001 = free plan trigger fired.
     if (projectError.code === 'P0001') {
       return { error: 'Free plan allows only one project.' }
     }
@@ -137,7 +149,7 @@ export async function completeOnboarding(
       code: projectError.code,
       message: projectError.message,
     })
-    return { error: 'Failed to save project. Please try again.' }
+    return { error: `Failed to save project (code: ${projectError.code ?? 'unknown'}). Please try again.` }
   }
 
   redirect('/dashboard')
