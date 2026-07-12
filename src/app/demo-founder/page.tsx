@@ -7,10 +7,10 @@ const projects = [
     mark: "S",
     description: "Customer feedback without the noise.",
     status: "Active",
-    revenue: "$11.2k/mo",
-    verification: "verified",
-    provider: "Stripe",
-    sync: "Synced today",
+    revenue: "1,240 users",
+    verification: "demo",
+    provider: "Demo data",
+    sync: "+12.8% in 30 days",
     chart: "up",
   },
   {
@@ -18,10 +18,10 @@ const projects = [
     mark: "T",
     description: "Simple, privacy-first analytics for small teams.",
     status: "Active",
-    revenue: "$7.2k/mo",
-    verification: "verified",
-    provider: "Stripe",
-    sync: "Synced today",
+    revenue: "312 stores",
+    verification: "demo",
+    provider: "Demo data",
+    sync: "+18% in 30 days",
     chart: "steady",
   },
   {
@@ -29,7 +29,7 @@ const projects = [
     mark: "D",
     description: "A lightweight writing workspace for product teams.",
     status: "Building",
-    revenue: "$800/mo",
+    revenue: "48 signups",
     verification: "unverified",
     provider: "Manual entry",
     sync: "Not connected",
@@ -57,9 +57,9 @@ export default function DemoFounderPage() {
           <p className={styles.bio}>I build focused software for small teams. Less dashboard theatre, more useful work.</p>
 
           <div className={styles.totalCard}>
-            <div className={styles.verifiedTitle}><span>✓</span> Total verified revenue</div>
-            <strong>$18.4k<span>/month</span></strong>
-            <p>Across 2 connected projects</p>
+            <div className={styles.verifiedTitle}><span>●</span> Demonstration profile</div>
+            <strong>3<span> projects</span></strong>
+            <p>Metrics below are example data</p>
           </div>
 
           <nav className={styles.socials} aria-label="Social links">
@@ -90,17 +90,17 @@ export default function DemoFounderPage() {
                 </div>
 
                 <div className={styles.metricRow}>
-                  <div><span>Revenue</span><strong>{project.revenue}</strong></div>
-                  <div><span>Proof</span><strong className={project.verification === "verified" ? styles.green : styles.grey}>{project.verification === "verified" ? "Verified" : "Unverified"}</strong></div>
+                  <div><span>Primary metric</span><strong>{project.revenue}</strong></div>
+                  <div><span>Status</span><strong className={styles.grey}>{project.verification === "demo" ? "Demo" : "Unverified"}</strong></div>
                   <div><span>Source</span><strong>{project.provider}</strong></div>
                 </div>
 
                 <div className={`${styles.chart} ${styles[project.chart]}`} aria-hidden="true"><span /></div>
 
                 <footer className={styles.cardFooter}>
-                  <div className={project.verification === "verified" ? styles.verifiedBadge : styles.unverifiedBadge}>
-                    <span>{project.verification === "verified" ? "✓" : "–"}</span>
-                    {project.verification === "verified" ? "Revenue verified" : "Revenue not verified"}
+                  <div className={styles.unverifiedBadge}>
+                    <span>●</span>
+                    {project.verification === "demo" ? "Demonstration data" : "Owner entered · Unverified"}
                   </div>
                   <time>{project.sync}</time>
                 </footer>
