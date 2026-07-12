@@ -22,7 +22,7 @@ export function MetricsManager({ projects, metrics }: { projects: Project[]; met
   const [maxDate] = useState(() => new Date(Date.now() + 86_400_000).toISOString().slice(0, 16))
   useEffect(() => { const saved = localStorage.getItem('proofpage-locale'); if (saved === 'ru') queueMicrotask(() => setLocale('ru')) }, [])
   const t = labels[locale]
-  const grouped = useMemo(() => new Map(projects.map((p) => [p.id, metrics.filter((m) => m.project_id === p.id)])), [metrics, projects])
+  const grouped = useMemo(() => new Map(projects.map((p) => [p.id, metrics.filter((m) => m.project_id === p.id && m.metric_type === (p.primary_metric_type ?? 'users'))])), [metrics, projects])
 
   return <>
     <section className={styles.metricFormPanel}><div className={styles.panelHead}><div><p className={styles.eyebrow}>{t.add}</p><h2>{t.add}</h2></div><div className={styles.miniLocale}><button type="button" className={locale === 'en' ? styles.selected : ''} onClick={() => setLocale('en')}>EN</button><button type="button" className={locale === 'ru' ? styles.selected : ''} onClick={() => setLocale('ru')}>RU</button></div></div>
