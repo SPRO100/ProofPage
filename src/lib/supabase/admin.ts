@@ -1,4 +1,6 @@
+import 'server-only'
 import { createClient } from '@supabase/supabase-js'
+import { normalizeSupabaseUrl } from './config'
 
 // Service-role client — bypasses RLS.
 // ONLY use in Route Handlers that require elevated access:
@@ -15,7 +17,7 @@ export function createAdminClient() {
     throw new Error('Supabase admin credentials are not configured')
   }
 
-  return createClient(url, serviceKey, {
+  return createClient(normalizeSupabaseUrl(url), serviceKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,

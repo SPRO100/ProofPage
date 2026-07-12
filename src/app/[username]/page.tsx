@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
@@ -49,7 +50,7 @@ export default async function PublicFounderPage({ params }: PageProps) {
   const displayProjects = projectList.map((project) => {
     const metric = latestByProject.get(project.id) ?? null;
     const source = metric?.source_id ? sourceById.get(metric.source_id) ?? null : null;
-    return { ...project, revenue: buildRevenueDisplay(metric, source), manualMetrics: manualByProject.get(project.id) ?? [] };
+    return { ...project, revenue: buildRevenueDisplay(metric, source), manualMetrics: (manualByProject.get(project.id) ?? []).filter((point) => point.metric_type === (project.primary_metric_type ?? 'users')) };
   });
 
   const verifiedTotal = displayProjects.reduce((sum, project) => project.revenue?.state === "verified" ? sum + project.revenue.mrr : sum, 0);
@@ -80,7 +81,7 @@ export default async function PublicFounderPage({ params }: PageProps) {
               const latestManual = project.manualMetrics.at(-1);
               const manualLabel = latestManual ? metricLabel(latestManual, locale) : null;
               return <article className={styles.projectCard} key={project.id}>
-                <div className={styles.cardTop}><div className={`${styles.projectMark} ${styles[`mark${(index % 3) + 1}`]}`}>{project.name[0]?.toUpperCase()}</div><div className={styles.projectIdentity}><div className={styles.nameRow}><h3>{project.name}</h3><span className={styles.status}>{statusLabels[project.status as ProjectStatus]}</span></div><p>{project.description_en ?? "Project details coming soon."}</p></div>{project.url && <a className={styles.visit} href={project.url} rel="noreferrer" target="_blank">↗</a>}</div>
+                <div className={styles.cardTop}>{project.logo_url ? <Image className={styles.projectMark} src={project.logo_url} alt="" width={48} height={48} unoptimized/> : <div className={`${styles.projectMark} ${styles[`mark${(index % 3) + 1}`]}`}>{project.name[0]?.toUpperCase()}</div>}<div className={styles.projectIdentity}><div className={styles.nameRow}><h3>{project.name}</h3><span className={styles.status}>{statusLabels[project.status as ProjectStatus]}</span></div><p>{locale === "ru" ? project.description_ru ?? project.description_en ?? "Описание скоро появится." : project.description_en ?? project.description_ru ?? "Project details coming soon."}</p></div>{project.url && <a className={styles.visit} href={project.url} rel="noreferrer" target="_blank">↗</a>}</div>
                 <div className={styles.metricRow}><div><span>{manualLabel ?? "Metric"}</span><strong>{latestManual ? formatMetric(latestManual, locale) : project.revenue ? formatMoney(project.revenue.mrr, project.revenue.currency) + "/mo" : (locale === "ru" ? "Не указано" : "Not shared")}</strong></div><div><span>{locale === "ru" ? "Статус" : "Status"}</span><strong className={verified ? styles.green : styles.grey}>{verified ? "Verified" : (locale === "ru" ? "Не подтверждено" : "Unverified")}</strong></div><div><span>{locale === "ru" ? "Источник" : "Source"}</span><strong>{verified && project.revenue?.provider ? project.revenue.provider : (locale === "ru" ? "Введено владельцем" : "Owner entered")}</strong></div></div>
                 {project.manualMetrics.length ? <MetricChart points={project.manualMetrics.map((point: ProjectMetric) => ({ id: point.id, value: point.value, measured_at: point.measured_at }))} locale={locale}/> : <div className={`${styles.chart} ${styles[index % 2 ? "steady" : "up"]}`} aria-hidden="true"><span /></div>}
                 <footer className={styles.cardFooter}><div className={verified ? styles.verifiedBadge : styles.unverifiedBadge}><span>{verified ? "✓" : "–"}</span>{verified ? "Revenue verified" : (locale === "ru" ? "Введено владельцем · Не подтверждено" : "Owner entered · Unverified")}</div><time>{latestManual ? formatDate(latestManual.measured_at, locale) : verified && project.revenue?.last_synced_at ? `Synced ${formatDate(project.revenue.last_synced_at, locale)}` : (locale === "ru" ? "Нет данных" : "No data")}</time></footer>

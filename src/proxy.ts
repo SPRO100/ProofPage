@@ -1,6 +1,7 @@
 // Next.js 16+ uses src/proxy.ts (previously middleware.ts)
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { getSupabaseUrl } from '@/lib/supabase/config'
 
 // Routes that require an authenticated session
 const PROTECTED_ROUTES = ['/dashboard', '/onboarding']
@@ -12,7 +13,7 @@ export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    getSupabaseUrl(),
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
