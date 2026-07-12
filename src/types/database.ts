@@ -51,6 +51,7 @@ export interface Project {
   status: ProjectStatus
   sort_order: number
   is_public: boolean
+  primary_metric_type: ProjectMetricType
   created_at: string
   updated_at: string
 }
