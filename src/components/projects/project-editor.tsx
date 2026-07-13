@@ -1,11 +1,12 @@
 'use client'
 
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useState } from 'react'
 import Link from 'next/link'
 import { deleteProject, updateProject, type ProjectActionState } from '@/app/actions/projects'
 import type { Project, ProjectMetricType, ProjectStatus } from '@/types/database'
 import { PRIMARY_METRICS, PROJECT_STATUSES } from '@/lib/projects/validation'
 import styles from './project-editor.module.css'
+import { useLocale } from '@/lib/i18n/use-locale'
 
 const text = {
  en:{title:'Project settings',name:'Name',descEn:'Description in English',descRu:'Description in Russian',url:'Project URL',status:'Status',metric:'Primary public metric',public:'Show project publicly',logo:'Project logo',logoHelp:'PNG, JPEG or WebP · max 2 MB',save:'Save changes',preview:'Open public profile',danger:'Delete project',confirm:'Type DELETE to confirm',remove:'Delete permanently',states:{building:'Building',active:'Active',paused:'Paused',sold:'Sold',closed:'Closed'},metrics:{users:'Users',customers:'Customers',signups:'Signups',sales:'Sales',revenue:'Revenue',mrr:'MRR',custom:'Custom'}},
@@ -13,9 +14,8 @@ const text = {
 } as const
 
 export function ProjectEditor({ project, username }: { project:Project; username:string }) {
- const [locale,setLocale]=useState<'en'|'ru'>('en'); const [state,action,pending]=useActionState<ProjectActionState,FormData>(updateProject,{}); const [confirm,setConfirm]=useState('')
- useEffect(()=>{if(localStorage.getItem('proofpage-locale')==='ru')queueMicrotask(()=>setLocale('ru'))},[]); const t=text[locale]
- return <section className={styles.card}><header><div><span>{t.title}</span><h2>{project.name}</h2></div><div className={styles.actions}><button type="button" onClick={()=>setLocale(locale==='en'?'ru':'en')}>{locale.toUpperCase()}</button><Link href={`/${username}`} target="_blank">{t.preview} ↗</Link></div></header>
+ const { locale, setLocale } = useLocale(); const [state,action,pending]=useActionState<ProjectActionState,FormData>(updateProject,{}); const [confirm,setConfirm]=useState(''); const t=text[locale]
+ return <section className={styles.card}><header><div><span>{t.title}</span><h2>{project.name}</h2></div><div className={styles.actions}><button type="button" onClick={()=>setLocale(locale==='en'?'ru':'en')}>{locale.toUpperCase()}</button><Link href={`/${username}?preview=1`} target="_blank">{t.preview} ↗</Link></div></header>
   <form action={action} className={styles.form} encType="multipart/form-data"><input type="hidden" name="project_id" value={project.id}/>
    <label>{t.name}<input name="name" defaultValue={project.name} required maxLength={100}/><Error text={state.fieldErrors?.name}/></label>
    <label>{t.url}<input name="url" type="url" defaultValue={project.url ?? ''} placeholder="https://"/><Error text={state.fieldErrors?.url}/></label>

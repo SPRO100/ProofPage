@@ -1,11 +1,12 @@
 'use client'
 
-import { useActionState, useEffect, useMemo, useState } from 'react'
+import { useActionState, useMemo, useState } from 'react'
 import { addManualMetric, deleteManualMetric, type MetricActionState } from '@/app/actions/metrics'
 import type { Project, ProjectMetric, ProjectMetricType } from '@/types/database'
 import { MetricChart } from './metric-chart'
 import dashboardStyles from '@/app/dashboard/dashboard.module.css'
 import metricStyles from './metrics-manager.module.css'
+import { useLocale } from '@/lib/i18n/use-locale'
 
 const styles = { ...dashboardStyles, ...metricStyles }
 
@@ -16,11 +17,10 @@ const labels = {
 const types: ProjectMetricType[] = ['users','customers','signups','sales','revenue','mrr','custom']
 
 export function MetricsManager({ projects, metrics }: { projects: Project[]; metrics: ProjectMetric[] }) {
-  const [locale, setLocale] = useState<'en'|'ru'>('en')
+  const { locale, setLocale } = useLocale()
   const [state, action, pending] = useActionState<MetricActionState, FormData>(addManualMetric, {})
   const [selectedType, setSelectedType] = useState<ProjectMetricType>('users')
   const [maxDate] = useState(() => new Date(Date.now() + 86_400_000).toISOString().slice(0, 16))
-  useEffect(() => { const saved = localStorage.getItem('proofpage-locale'); if (saved === 'ru') queueMicrotask(() => setLocale('ru')) }, [])
   const t = labels[locale]
   const grouped = useMemo(() => new Map(projects.map((p) => [p.id, metrics.filter((m) => m.project_id === p.id && m.metric_type === (p.primary_metric_type ?? 'users'))])), [metrics, projects])
 

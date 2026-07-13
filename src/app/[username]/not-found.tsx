@@ -1,5 +1,12 @@
-import Link from "next/link";
+import Link from 'next/link'
+import { cookies } from 'next/headers'
 
-export default function ProfileNotFound() {
-  return <main className="grid min-h-screen place-items-center bg-[#ebe9e3] p-6 text-[#171714]"><section className="w-full max-w-xl rounded-[28px] border border-black/10 bg-[#fffefa] p-10 text-center shadow-[0_30px_90px_rgba(30,26,18,0.08)]"><p className="text-lg font-black tracking-[-0.05em]">ProofPage<span className="text-[#dda91f]">.</span></p><p className="mt-16 text-xs font-black uppercase tracking-[0.18em] text-[#8b6a0c]">404 · Profile unavailable</p><h1 className="mt-5 text-5xl font-black leading-[.95] tracking-[-0.065em]">There&apos;s no public proof here yet.</h1><p className="mx-auto mt-6 max-w-md leading-7 text-[#77746c]">The address may be incorrect, or the founder may still be preparing their page.</p><div className="mt-10 flex flex-wrap justify-center gap-3"><Link className="rounded-full bg-[#171714] px-6 py-3 font-bold text-white" href="/">Back to ProofPage</Link><Link className="rounded-full border border-black/15 px-6 py-3 font-bold" href="/signup">Claim your address</Link></div></section></main>;
+const copy = {
+  en: { eyebrow:'404 · Profile unavailable', title:"There's no public proof here yet.", text:'The address may be incorrect, or the founder may still be preparing their page.', back:'Back to ProofPage', claim:'Claim your address' },
+  ru: { eyebrow:'404 · Профиль недоступен', title:'Публичных доказательств здесь пока нет.', text:'Возможно, адрес указан неверно или основатель ещё готовит страницу.', back:'Вернуться в ProofPage', claim:'Занять свой адрес' },
+} as const
+
+export default async function ProfileNotFound() {
+  const locale = (await cookies()).get('proofpage-locale')?.value === 'ru' ? 'ru' : 'en'; const t = copy[locale]
+  return <main className="grid min-h-screen place-items-center bg-[var(--canvas)] p-6 text-[var(--ink)]"><section className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-[var(--stone)] bg-white p-10 text-center shadow-[var(--shadow-lift)]"><div className="mx-auto inline-flex items-center gap-2 font-extrabold"><span className="grid size-9 place-items-center rounded-full bg-[var(--ink)] text-xs text-white">P</span>ProofPage</div><p className="mt-16 text-xs font-extrabold uppercase tracking-[.16em] text-[var(--coral)]">{t.eyebrow}</p><h1 className="mt-5 font-[family-name:var(--font-display)] text-4xl leading-tight uppercase tracking-wide sm:text-5xl">{t.title}</h1><p className="mx-auto mt-6 max-w-md leading-7 text-[var(--slate)]">{t.text}</p><div className="mt-10 flex flex-wrap justify-center gap-3"><Link className="rounded-lg bg-[var(--ink)] px-6 py-3 font-bold text-white" href="/">{t.back}</Link><Link className="rounded-lg border border-[var(--stone)] px-6 py-3 font-bold" href="/signup">{t.claim}</Link></div></section></main>
 }

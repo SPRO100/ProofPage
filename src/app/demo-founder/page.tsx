@@ -1,130 +1,17 @@
-import Link from "next/link";
-import styles from "./profile.module.css";
+import Link from 'next/link'
+import { cookies } from 'next/headers'
+import { LocaleToggle } from '@/components/locale-toggle'
+import styles from './profile.module.css'
 
-const projects = [
-  {
-    name: "SignalDesk",
-    mark: "S",
-    description: "Customer feedback without the noise.",
-    status: "Active",
-    revenue: "1,240 users",
-    verification: "demo",
-    provider: "Demo data",
-    sync: "+12.8% in 30 days",
-    chart: "up",
-  },
-  {
-    name: "TinyMetrics",
-    mark: "T",
-    description: "Simple, privacy-first analytics for small teams.",
-    status: "Active",
-    revenue: "312 stores",
-    verification: "demo",
-    provider: "Demo data",
-    sync: "+18% in 30 days",
-    chart: "steady",
-  },
-  {
-    name: "DraftKit",
-    mark: "D",
-    description: "A lightweight writing workspace for product teams.",
-    status: "Building",
-    revenue: "48 signups",
-    verification: "unverified",
-    provider: "Manual entry",
-    sync: "Not connected",
-    chart: "new",
-  },
-] as const;
+const copy = {
+  en: { share:'Share profile', socialLabel:'Social links', kicker:'Independent founder', location:'Tallinn, Estonia', bio:'I build focused software for small teams. Less dashboard theatre, more useful work.', demo:'Demonstration profile', count:'3 projects', demoText:'Metrics below are example data', social:['X / Twitter ↗','LinkedIn ↗','Personal site ↗'], available:'Open to founder conversations', portfolio:'Portfolio', building:"What I'm building", projects:'3 projects', primary:'Primary metric', status:'Status', source:'Source', demoStatus:'Demo', unverified:'Unverified', demoData:'Demonstration data', manual:'Owner entered · Unverified', note:'Founder note', quote:'“I used to hide the projects that did not work. Now I think they explain the successful ones better than anything else.”', timeline:[['2023','First $1 online'],['2024','SignalDesk launched'],['2025','$10k monthly revenue'],['Now','Building DraftKit']], built:'Built with', create:'Create your ProofPage →', projectsData:[['SignalDesk','Customer feedback without the noise.','Active','1,240 users','Demo data','+12.8% in 30 days'],['TinyMetrics','Simple, privacy-first analytics for small teams.','Active','312 stores','Demo data','+18% in 30 days'],['DraftKit','A lightweight writing workspace for product teams.','Building','48 signups','Manual entry','Not connected']] },
+  ru: { share:'Поделиться профилем', socialLabel:'Социальные ссылки', kicker:'Независимый основатель', location:'Таллин, Эстония', bio:'Создаю сфокусированные продукты для небольших команд. Меньше показных дашбордов, больше полезной работы.', demo:'Демонстрационный профиль', count:'3 проекта', demoText:'Ниже показаны демонстрационные данные', social:['X / Twitter ↗','LinkedIn ↗','Личный сайт ↗'], available:'Открыт к общению с основателями', portfolio:'Портфолио', building:'Что я создаю', projects:'3 проекта', primary:'Главный показатель', status:'Статус', source:'Источник', demoStatus:'Демо', unverified:'Не подтверждено', demoData:'Демонстрационные данные', manual:'Введено владельцем · Не подтверждено', note:'Заметка основателя', quote:'«Раньше я скрывал неудачные проекты. Теперь думаю, что именно они лучше всего объясняют успешные».', timeline:[['2023','Первый $1 онлайн'],['2024','Запуск SignalDesk'],['2025','$10 тыс. выручки в месяц'],['Сейчас','Создаю DraftKit']], built:'Создано с', create:'Создать свою ProofPage →', projectsData:[['SignalDesk','Отзывы клиентов без лишнего шума.','Активен','1 240 пользователей','Демо-данные','+12,8% за 30 дней'],['TinyMetrics','Простая приватная аналитика для небольших команд.','Активен','312 магазинов','Демо-данные','+18% за 30 дней'],['DraftKit','Лёгкое пространство для продуктовых текстов.','Создаётся','48 регистраций','Ручной ввод','Не подключено']] },
+} as const
 
-export default function DemoFounderPage() {
-  return (
-    <main className={styles.page}>
-      <header className={styles.topbar}>
-        <Link href="/" className={styles.wordmark}>ProofPage<span>.</span></Link>
-        <div className={styles.topActions}>
-          <button className={styles.language}>EN <span>RU</span></button>
-          <button className={styles.share}>Share profile</button>
-        </div>
-      </header>
-
-      <div className={styles.layout}>
-        <aside className={styles.founder}>
-          <div className={styles.avatar}>AM</div>
-          <p className={styles.kicker}>Independent founder</p>
-          <h1>Alex Morgan</h1>
-          <p className={styles.location}>Tallinn, Estonia</p>
-          <p className={styles.bio}>I build focused software for small teams. Less dashboard theatre, more useful work.</p>
-
-          <div className={styles.totalCard}>
-            <div className={styles.verifiedTitle}><span>●</span> Demonstration profile</div>
-            <strong>3<span> projects</span></strong>
-            <p>Metrics below are example data</p>
-          </div>
-
-          <nav className={styles.socials} aria-label="Social links">
-            <a href="#twitter">X / Twitter ↗</a>
-            <a href="#linkedin">LinkedIn ↗</a>
-            <a href="#website">Personal site ↗</a>
-          </nav>
-
-          <div className={styles.availability}><span /> Open to founder conversations</div>
-        </aside>
-
-        <section className={styles.projects}>
-          <div className={styles.sectionHead}>
-            <div><p>Portfolio</p><h2>What I&apos;m building</h2></div>
-            <span>{projects.length} projects</span>
-          </div>
-
-          <div className={styles.projectList}>
-            {projects.map((project, index) => (
-              <article className={styles.projectCard} key={project.name}>
-                <div className={styles.cardTop}>
-                  <div className={`${styles.projectMark} ${styles[`mark${index + 1}`]}`}>{project.mark}</div>
-                  <div className={styles.projectIdentity}>
-                    <div className={styles.nameRow}><h3>{project.name}</h3><span className={styles.status}>{project.status}</span></div>
-                    <p>{project.description}</p>
-                  </div>
-                  <a className={styles.visit} href={`#${project.name.toLowerCase()}`} aria-label={`Visit ${project.name}`}>↗</a>
-                </div>
-
-                <div className={styles.metricRow}>
-                  <div><span>Primary metric</span><strong>{project.revenue}</strong></div>
-                  <div><span>Status</span><strong className={styles.grey}>{project.verification === "demo" ? "Demo" : "Unverified"}</strong></div>
-                  <div><span>Source</span><strong>{project.provider}</strong></div>
-                </div>
-
-                <div className={`${styles.chart} ${styles[project.chart]}`} aria-hidden="true"><span /></div>
-
-                <footer className={styles.cardFooter}>
-                  <div className={styles.unverifiedBadge}>
-                    <span>●</span>
-                    {project.verification === "demo" ? "Demonstration data" : "Owner entered · Unverified"}
-                  </div>
-                  <time>{project.sync}</time>
-                </footer>
-              </article>
-            ))}
-          </div>
-
-          <div className={styles.journey}>
-            <p>Founder note</p>
-            <blockquote>“I used to hide the projects that didn&apos;t work. Now I think they explain the successful ones better than anything else.”</blockquote>
-            <div className={styles.timeline}>
-              <span><strong>2023</strong> First $1 online</span>
-              <span><strong>2024</strong> SignalDesk launched</span>
-              <span><strong>2025</strong> $10k monthly revenue</span>
-              <span><strong>Now</strong> Building DraftKit</span>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <footer className={styles.brandFooter}>
-        <span>Built with <strong>ProofPage</strong></span>
-        <Link href="/signup">Create your page →</Link>
-      </footer>
-    </main>
-  );
+export default async function DemoFounderPage() {
+  const locale = (await cookies()).get('proofpage-locale')?.value === 'ru' ? 'ru' : 'en'; const t = copy[locale]
+  return <main className={styles.page}><header className={styles.topbar}><Link href="/" className={styles.wordmark}><span>P</span>ProofPage</Link><div className={styles.topActions}><LocaleToggle/><button className={styles.share}>{t.share}</button></div></header><div className={styles.layout}>
+    <aside className={styles.founder}><div className={styles.avatar}>AM</div><p className={styles.kicker}>{t.kicker}</p><h1>Alex Morgan</h1><p className={styles.location}>{t.location}</p><p className={styles.bio}>{t.bio}</p><div className={styles.totalCard}><div className={styles.verifiedTitle}><span>●</span>{t.demo}</div><strong>{t.count}</strong><p>{t.demoText}</p></div><nav className={styles.socials} aria-label={t.socialLabel}>{t.social.map((item,index)=><a href={`#link-${index}`} key={item}>{item}</a>)}</nav><div className={styles.availability}><span/>{t.available}</div></aside>
+    <section className={styles.projects}><div className={styles.sectionHead}><div><p>{t.portfolio}</p><h2>{t.building}</h2></div><span>{t.projects}</span></div><div className={styles.projectList}>{t.projectsData.map((project,index)=><article className={styles.projectCard} key={project[0]}><div className={styles.cardTop}><div className={`${styles.projectMark} ${styles[`mark${index+1}`]}`}>{project[0][0]}</div><div className={styles.projectIdentity}><div className={styles.nameRow}><h3>{project[0]}</h3><span className={styles.status}>{project[2]}</span></div><p>{project[1]}</p></div><a className={styles.visit} href={`#project-${index}`}>↗</a></div><div className={styles.metricRow}><div><span>{t.primary}</span><strong>{project[3]}</strong></div><div><span>{t.status}</span><strong className={styles.grey}>{index < 2 ? t.demoStatus : t.unverified}</strong></div><div><span>{t.source}</span><strong>{project[4]}</strong></div></div><div className={`${styles.chart} ${index === 1 ? styles.steady : index === 2 ? styles.new : styles.up}`} aria-hidden="true"><span/></div><footer className={styles.cardFooter}><div className={styles.unverifiedBadge}><span>●</span>{index < 2 ? t.demoData : t.manual}</div><time>{project[5]}</time></footer></article>)}</div><div className={styles.journey}><p>{t.note}</p><blockquote>{t.quote}</blockquote><div className={styles.timeline}>{t.timeline.map((item)=><span key={item[0]}><strong>{item[0]}</strong>{item[1]}</span>)}</div></div></section>
+  </div><footer className={styles.brandFooter}><span>{t.built} <strong>ProofPage</strong></span><Link href="/signup">{t.create}</Link></footer></main>
 }

@@ -1,49 +1,29 @@
-import Link from "next/link";
-import type { ReactNode } from "react";
+'use client'
 
-type AuthShellProps = {
-  children: ReactNode;
-  eyebrow: string;
-  title: string;
-  description: string;
-  footer: ReactNode;
-};
+import Link from 'next/link'
+import type { ReactNode } from 'react'
+import { LocaleToggle } from '@/components/locale-toggle'
+import { useLocale, type Locale } from '@/lib/i18n/use-locale'
+
+type Localized = Record<Locale, string>
+type AuthShellProps = { children: ReactNode; eyebrow: Localized; title: Localized; description: Localized; footer: Record<Locale, ReactNode> }
+
+const trust = {
+  en: 'Revenue is never verified without a connected read-only source.',
+  ru: 'Выручка не считается подтверждённой без подключённого read-only источника.',
+}
+const doodle = { en: 'proof → trust', ru: 'факты → доверие' } as const
 
 export function AuthShell({ children, eyebrow, title, description, footer }: AuthShellProps) {
-  return (
-    <main className="min-h-screen bg-[#f3f1eb] px-5 py-6 text-[#141412]">
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between">
-        <Link href="/" className="text-lg font-black tracking-[-0.05em]">
-          ProofPage<span className="text-[#dda91f]">.</span>
-        </Link>
-        <span className="text-xs font-bold text-[#706e67]">EN · RU</span>
-      </header>
-
-      <section className="mx-auto grid min-h-[calc(100vh-72px)] w-full max-w-6xl place-items-center py-12">
-        <div className="grid w-full max-w-5xl overflow-hidden rounded-[28px] border border-black/10 bg-[#fffefa] shadow-[0_30px_90px_rgba(30,26,18,0.09)] md:grid-cols-[0.9fr_1.1fr]">
-          <aside className="flex min-h-64 flex-col justify-between bg-[#171714] p-8 text-white md:p-12">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#dda91f]">{eyebrow}</p>
-              <h1 className="mt-6 max-w-md text-4xl font-black leading-[0.95] tracking-[-0.06em] md:text-6xl">{title}</h1>
-              <p className="mt-6 max-w-sm leading-7 text-white/60">{description}</p>
-            </div>
-            <div className="mt-12 flex items-center gap-3 text-sm text-white/55">
-              <span className="grid h-7 w-7 place-items-center rounded-full bg-[#dda91f] font-black text-[#171714]">✓</span>
-              Revenue is never marked verified without a connected source.
-            </div>
-          </aside>
-          <div className="p-7 md:p-12">
-            {children}
-            <div className="mt-8 border-t border-black/10 pt-6 text-center text-sm text-[#706e67]">{footer}</div>
-          </div>
-        </div>
-      </section>
-    </main>
-  );
+  const { locale } = useLocale()
+  return <main className="auth-page">
+    <header className="auth-header"><Link href="/" className="brand"><span className="brand-mark">P</span>ProofPage</Link><LocaleToggle /></header>
+    <section className="auth-stage"><div className="auth-shell">
+      <aside className="auth-story"><div><p className="auth-eyebrow">{eyebrow[locale]}</p><h1>{title[locale]}</h1><p>{description[locale]}</p></div><div className="auth-trust"><span>✓</span>{trust[locale]}</div><span className="auth-doodle" aria-hidden="true">{doodle[locale]}</span></aside>
+      <div className="auth-form-panel">{children}<div className="auth-footer">{footer[locale]}</div></div>
+    </div></section>
+  </main>
 }
 
-export const fieldClass =
-  "mt-2 h-12 w-full rounded-xl border border-black/15 bg-white px-4 outline-none transition focus:border-[#141412] focus:ring-2 focus:ring-[#dda91f]/25";
-
-export const primaryButtonClass =
-  "mt-2 h-12 w-full rounded-full bg-[#171714] px-5 font-bold text-white transition hover:bg-black focus:outline-none focus:ring-2 focus:ring-[#dda91f] focus:ring-offset-2";
+export const fieldClass = 'app-field'
+export const primaryButtonClass = 'app-primary-button'
