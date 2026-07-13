@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { filterMetricPoints, type MetricPeriod } from '@/lib/metrics/chart'
 import styles from './metric-chart.module.css'
 
@@ -8,7 +8,6 @@ export type ChartPoint = { id: string; value: number; measured_at: string }
 
 export function MetricChart({ points, locale = 'en' }: { points: ChartPoint[]; locale?: 'en' | 'ru' }) {
   const [period, setPeriod] = useState<MetricPeriod>('30d')
-  const gradientId = `metric-fill-${useId().replaceAll(':', '')}`
   const filtered = useMemo(() => filterMetricPoints(points, period), [period, points])
 
   const values = filtered.map((p) => Number(p.value))
@@ -22,9 +21,8 @@ export function MetricChart({ points, locale = 'en' }: { points: ChartPoint[]; l
   return <div className={styles.wrap}>
     <div className={styles.periods} aria-label={locale === 'ru' ? 'Период графика' : 'Chart period'}>{(['7d','30d','12m'] as MetricPeriod[]).map((p) => <button type="button" key={p} className={p === period ? styles.active : ''} onClick={() => setPeriod(p)}>{p === '7d' ? (locale === 'ru' ? '7 дней' : '7 days') : p === '30d' ? (locale === 'ru' ? '30 дней' : '30 days') : (locale === 'ru' ? '12 месяцев' : '12 months')}</button>)}</div>
     {coords.length === 0 ? <div className={styles.empty}>{locale === 'ru' ? 'Нет данных за выбранный период' : 'No data for this period'}</div> : <svg className={styles.chart} viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label={locale === 'ru' ? 'Динамика показателя' : 'Metric trend'}>
-      <defs><linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#8b6fe8" stopOpacity=".42"/><stop offset="1" stopColor="#8b6fe8" stopOpacity="0"/></linearGradient></defs>
-      <path d={area} fill={`url(#${gradientId})`}/><polyline points={polyline} fill="none" stroke="#9b83ef" strokeWidth="2" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round"/>
-      {coords.map((p) => <circle key={p.id} cx={p.x} cy={p.y} r="1.8" fill="#f7f5ef"><title>{new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(p.measured_at))}: {Number(p.value).toLocaleString(locale)}</title></circle>)}
+      <path d={area} fill="#FEDF89" opacity=".42"/><polyline points={polyline} fill="none" stroke="#FF5858" strokeWidth="2" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round"/>
+      {coords.map((p) => <circle key={p.id} cx={p.x} cy={p.y} r="1.8" fill="#151B31"><title>{new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(p.measured_at))}: {Number(p.value).toLocaleString(locale)}</title></circle>)}
     </svg>}
   </div>
 }

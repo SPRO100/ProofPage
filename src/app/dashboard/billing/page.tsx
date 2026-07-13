@@ -1,51 +1,12 @@
+import { cookies } from 'next/headers'
 import styles from '../dashboard.module.css'
 
-export default function BillingPage() {
-  return (
-    <main className={styles.content}>
-      <div className={styles.pageHead}>
-        <div>
-          <p className={styles.eyebrow}>Billing</p>
-          <h1>Choose how far your portfolio grows.</h1>
-          <p>Start free. Upgrade when you need more projects and proof.</p>
-        </div>
-      </div>
+const copy = {
+  en: { eyebrow:'Billing', title:'Choose how far your proof grows.', intro:'Start free. Upgrade only when you need more projects and connected proof.', current:'Current plan', recommended:'Planned plan', freeText:'One public profile and one project.', freeItems:['Base proof-profile theme','Manual revenue · Unverified','ProofPage branding'], currentButton:'Current plan', proText:'A growing portfolio with verified proof.', proItems:['Multiple projects','Read-only revenue connections','Verified Revenue badge','More themes and analytics'], perMonth:'/month', soon:'Pro subscription · Coming soon', note:'Payments remain unavailable while the security review is completed. No card or checkout is opened.' },
+  ru: { eyebrow:'Тариф', title:'Выберите масштаб для своих доказательств.', intro:'Начните бесплатно. Переходите на Pro, когда понадобятся проекты и подключённые источники.', current:'Текущий тариф', recommended:'Планируемый тариф', freeText:'Один публичный профиль и один проект.', freeItems:['Базовая тема proof‑профиля','Ручная выручка · Не подтверждено','Брендинг ProofPage'], currentButton:'Текущий тариф', proText:'Растущее портфолио с подтверждёнными данными.', proItems:['Несколько проектов','Read-only подключения выручки','Значок Verified Revenue','Темы и расширенная аналитика'], perMonth:'/месяц', soon:'Подписка Pro · Скоро', note:'Платежи недоступны до завершения аудита безопасности. Мы не запрашиваем карту и не открываем checkout.' },
+} as const
 
-      <div className={styles.billingGrid}>
-        <article className={styles.billingCard}>
-          <span>Current plan</span>
-          <h2>Free</h2>
-          <strong>$0</strong>
-          <p>One public profile and one project.</p>
-          <ul>
-            <li>✓ Base theme</li>
-            <li>✓ Manual revenue</li>
-            <li>✓ ProofPage branding</li>
-          </ul>
-          <button className={styles.secondaryButton}>Current plan</button>
-        </article>
-
-        <article className={`${styles.billingCard} ${styles.proBilling}`}>
-          <span>Recommended</span>
-          <h2>Pro</h2>
-          <strong>$9<small>/month</small></strong>
-          <p>A growing portfolio with verified proof.</p>
-          <ul>
-            <li>✓ Multiple projects</li>
-            <li>✓ Verified revenue</li>
-            <li>✓ More themes</li>
-            <li>✓ Advanced analytics</li>
-          </ul>
-          <div style={{ marginTop: 'auto', width: '100%' }}>
-            <button className={styles.disabledButton} style={{ width: '100%' }} disabled aria-disabled="true">
-              Pro subscription — coming soon
-            </button>
-            <p style={{ marginTop: 12, fontSize: '0.72rem', color: '#85827a', textAlign: 'center' }}>
-              Payments are temporarily unavailable while we complete a security setup.
-            </p>
-          </div>
-        </article>
-      </div>
-    </main>
-  )
+export default async function BillingPage() {
+  const locale = (await cookies()).get('proofpage-locale')?.value === 'ru' ? 'ru' : 'en'; const t = copy[locale]
+  return <main className={styles.content}><div className={styles.pageHead}><div><p className={styles.eyebrow}>{t.eyebrow}</p><h1>{t.title}</h1><p>{t.intro}</p></div></div><div className={styles.billingGrid}><article className={styles.billingCard}><span>{t.current}</span><h2>Free</h2><strong>$0</strong><p>{t.freeText}</p><ul>{t.freeItems.map((item)=><li key={item}>✓ {item}</li>)}</ul><button className={styles.secondaryButton}>{t.currentButton}</button></article><article className={`${styles.billingCard} ${styles.proBilling}`}><span>{t.recommended}</span><h2>Pro</h2><strong>$9<small>{t.perMonth}</small></strong><p>{t.proText}</p><ul>{t.proItems.map((item)=><li key={item}>○ {item}</li>)}</ul><div style={{ marginTop:'auto', width:'100%' }}><button className={styles.disabledButton} style={{ width:'100%' }} disabled aria-disabled="true">{t.soon}</button><p style={{ marginTop:12, fontSize:'.72rem', color:'var(--slate)', textAlign:'center', lineHeight:1.5 }}>{t.note}</p></div></article></div></main>
 }

@@ -1,1 +1,6 @@
-.wrap{margin-top:18px}.periods{display:flex;gap:6px;justify-content:flex-end}.periods button{padding:6px 9px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:transparent;color:#85899a;cursor:pointer;font-size:.67rem;font-weight:800}.periods .active{background:#414455;color:#f7f5ef}.chart{display:block;width:100%;height:150px;margin-top:9px;border-bottom:1px solid rgba(255,255,255,.09);background:repeating-linear-gradient(to bottom,transparent 0,transparent 48px,rgba(255,255,255,.04) 49px)}.empty{display:grid;height:150px;place-items:center;margin-top:9px;border:1px dashed rgba(255,255,255,.1);border-radius:12px;color:#85899a;font-size:.78rem}
+.wrap { margin-top: 18px; }
+.periods { display: flex; gap: 6px; justify-content: flex-end; }
+.periods button { padding: 6px 9px; border: 1px solid var(--stone); border-radius: 8px; background: transparent; color: var(--slate); cursor: pointer; font-size: .65rem; font-weight: 800; }
+.periods .active { border-color: var(--ink); background: var(--ink); color: white; }
+.chart { display: block; width: 100%; height: 150px; margin-top: 9px; border-bottom: 1px solid var(--stone); }
+.empty { display: grid; height: 150px; place-items: center; margin-top: 9px; border: 1px dashed #c9c7c2; border-radius: 16px; color: var(--slate); font-size: .76rem; }
